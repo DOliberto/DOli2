@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>oi, {{ user.username }}!</h1>
+    {% for post in posts %}
+    <div><p>{{ post.author.username }} criou: <b>{{ post.body }}</b></p></div>
+    {% endfor %}
+{% endblock %}

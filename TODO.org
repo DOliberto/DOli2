@@ -1,0 +1,7 @@
+- following
+  https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-database,
+  but uses relation database, so:
+  - http://phriscage.github.io/2014/12/06/Flask-NoSQL-Authentication-Tutorial-Part-I/
+    and https://github.com/phriscage/flask_elasticsearch_auth_example
+    would seem to work.
+

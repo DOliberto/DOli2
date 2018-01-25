@@ -1,0 +1,1 @@
+from doliapp import app
