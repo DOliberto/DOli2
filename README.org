@@ -1,0 +1,22 @@
+#+TITLE: DOli flask app
+
+* build
+  you need python 3 and =virtualenv= installed.
+  : $ virtualenv venv
+  will create a virtual environment at the current directory.
+
+  to activate it,
+  : $ source venv/bin/activate
+  and you'll be inside the virtual environment.
+
+  to quit the virtual environment, just do
+  : $ deactivate
+
+* usage
+  : $ flask shell
+  will run a python shell with the flask app already setup (everything
+  imported, variables set, etc.)
+  : $ flask run
+  will run the flask app on localhost. this requires setting the
+  =FLASK_APP= variable with
+  : $ export FLASK_APP=doli.py
