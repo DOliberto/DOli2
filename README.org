@@ -20,3 +20,5 @@
   will run the flask app on localhost. this requires setting the
   =FLASK_APP= variable with
   : $ export FLASK_APP=doli.py
+  setting flask on debug mode is also useful:
+  : $ export FLASK_DEBUG=1
