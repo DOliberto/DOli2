@@ -1,0 +1,17 @@
+- usuário loga
+- seleciona tipo de publicação
+  - se publicação não tem template, abre editor HTML (@souzamatheusp),
+    talvez com última publicação daquele tipo já escrita (é possível
+    isso?)
+  - se publicação tem template, há dois tipos:
+    - e só precisa de formulário, abre formulário correto[fn:1]
+    - se precisa de texto tb, abre editor HTML depois do formulário
+
+^2 templates podem ter variáveis de publicação (nome de pessoa
+   nomeada) e de entidade (justificativa legal)
+
+* Footnotes
+
+[fn:1] como saber qual formulário abrir? quais são os tipos de dados e
+os validadores?
+
