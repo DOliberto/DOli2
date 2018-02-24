@@ -1,9 +1,15 @@
 #+TITLE: DOli flask app
 
+this version of DOliberto uses HTML as its main format. its
+architecture is heavily inspired by that of [[https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial][Grinberg's flask tutorial]].
+
 * build
   you need python 3 and =virtualenv= installed.
   : $ virtualenv venv
   will create a virtual environment at the current directory.
+  
+  if you haven't done it yet, install the project's dependencies:
+  : $ pip install -r requirements.txt
 
   to activate it,
   : $ source venv/bin/activate
