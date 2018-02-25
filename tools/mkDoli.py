@@ -1,5 +1,6 @@
 from lxml import etree
 from functools import reduce
+from os.path import basename, splitext
 
 """
 reads jinja2 template and compiles forms from its markup.
@@ -75,16 +76,19 @@ def elem_validators(val_field):
     val_elems = val_field.split(VALIDATOR_LIST_SEP)
     return list(map(to_val, val_elems))
 
+def filenameWOext(fp):
+    return splitext(basename(fp))[0]
+
 def compile_forms_in_file(fp, p):
     """reads form markup in file using parser p to tuple."""
     html = etree.parse(fp, parser=p)
     fs_infos = html.findall(DOLI_XPATH)
-    return list(map(elem2finfo, fs_infos))
+    return (filenameWOext(fp), list(map(elem2finfo, fs_infos)))
 
 def compile_files(fps, p):
     """reads markup in files using parser p and compiles them to python
     functions."""
-    return reduce(lambda finfos, fp: compile_forms_in_file(fp, p) + finfos, fps, [])
+    return reduce(lambda finfos, fp: finfos.append(compile_forms_in_file(fp, p)) or finfos, fps, [])
 
 def compile_forms(files):
     """compiles files to python module containing WTForms."""
