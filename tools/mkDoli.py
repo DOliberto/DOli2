@@ -1,69 +1,57 @@
 from lxml import etree
 from functools import reduce
 from os.path import basename, splitext
+from jinja2 import Template
+from forms_templates import REGULAR_FORM_TEMPLATE
 
 """
 reads jinja2 template and compiles forms from its markup.
 
-example markup:
-```
-<span class="preprocdoli" data-label="texto" data-validator="not-empty" data-long="true">
-  {{_texto}}
-</span>
-```
-
-means that the variable `_texto` will be captured by a form with 'texto' as
-label, and with validator that assures it is not empty. the data-long='true'
-means that the form should actually be an HTML input box.
+example markup in `doli-templates/`.
 """
 
 """
 TO-DO
-- [] add terminal call
-- [] add logging http://docs.python-guide.org/en/latest/writing/logging/
+- [ ] add logging http://docs.python-guide.org/en/latest/writing/logging/
+- [ ] check if there is clash in var_names
 """
 
 # XPATH to elements marked up with DOli form information
-DOLI_XPATH = "//span[@class='preprocdoli']"
+DOLI_XPATH = "//span[@class='doli-elem']"
 
 # field separator in data-validator attribute
 VALIDATOR_LIST_SEP = "|"
 
 # maps human-friendly string to WTForms validator function string
-VALIDATOR_MAP = {"not-empty": "DataRequired()", "is-number": "Number()"}
+VALIDATOR_MAP = {"not-empty": "DataRequired()", "is-number": "Number()", "": None}
+# maps human-friendly string to WTForms class
+FORM_TYPE_MAP =  {"long": "...", "date": "DataField", "text": "text", "": None}
 
 def elem_valid(elem):
     """checks if <span> element is valid form markup."""
-    try:
-        assert elem.get("class") == "preprocdoli"
-        assert elem.get("data-label") is not None
-        assert elem.get("data-validator") is not None
-        assert elem.get("data-long") in ["true", "false"]
-        return True
-    except AssertionError:
-        return False
+    assert elem.get("class") == "doli-elem"
+    assert elem.get("data-label") is not None
+    assert elem.get("data-validator") is not None
+    assert elem.get("data-type") in FORM_TYPE_MAP.keys()
+    return True
 
 def elem_varname(elemtext):
     """transforms '\n {{_var_name}} \n ' into _var_name."""
-    return elemtext.partition("{{")[2].partition("}}")[0]
+    return elemtext.partition("{{")[2].partition("}}")[0].strip()
 
-def is_long(val):
-    val = val.lower()
-    if val == "true":
-        return True
-    elif val == "false":
-        return False
-
-def elem2finfo(elem):
+def elem2field(elem):
     """
-    transforms <span> element into formulary data tuple:
-    
-    (variable-name, is long form?, form-label, form-validators)
+    transforms <span> element into formulary data dictionary.
     """
     if elem_valid(elem):
-        return (elem_varname(elem.text), is_long(elem.get("data-long")), elem.get("data-label"), elem_validators(elem.get("data-validator")))
+        return {"var_name": elem_varname(elem.text), "type": to_form_type(elem.get("data-type")),
+                "label": elem.get("data-label"), "validators": elem_validators(elem.get("data-validator"))}
     else:
         return None
+
+def to_form_type(type_str):
+    """maps human-friendly string to WTForms class"""
+    return FORM_TYPE_MAP[type_str]
 
 def to_val(validator_str):
     """maps human-friendly string to WTForms validator function
@@ -73,24 +61,62 @@ def to_val(validator_str):
 def elem_validators(val_field):
     """transforms list of human-friendly strings to list of WTForms
     validator functions strings."""
-    val_elems = val_field.split(VALIDATOR_LIST_SEP)
-    return list(map(to_val, val_elems))
+    val_field = val_field.strip()
+    if val_field == "":
+        return []
+    else:
+        val_elems = val_field.split(VALIDATOR_LIST_SEP)
+        return list(map(to_val, val_elems))
 
 def filenameWOext(fp):
     return splitext(basename(fp))[0]
 
-def compile_forms_in_file(fp, p):
+def make_form(form_name, form_fields):
+    return {"name": form_name, "fields": form_fields}
+
+def compile_form_in_file(fp, p):
     """reads form markup in file using parser p to tuple."""
     html = etree.parse(fp, parser=p)
-    fs_infos = html.findall(DOLI_XPATH)
-    return (filenameWOext(fp), list(map(elem2finfo, fs_infos)))
+    elems = html.findall(DOLI_XPATH)
+    return make_form(filenameWOext(fp), list(map(elem2field, elems)))
 
-def compile_files(fps, p):
+def parse_files(fps):
     """reads markup in files using parser p and compiles them to python
     functions."""
-    return reduce(lambda finfos, fp: finfos.append(compile_forms_in_file(fp, p)) or finfos, fps, [])
+    html_parser = etree.HTMLParser(encoding="utf8", recover=False)
+    return {"forms": list(reduce(lambda finfos, fp: finfos.append(compile_form_in_file(fp, html_parser)) or finfos, fps, []))}
+
+def render_forms(forms):
+    form_template = Template(REGULAR_FORM_TEMPLATE)
+    return form_template.render(forms)
 
 def compile_forms(files):
-    """compiles files to python module containing WTForms."""
-    html_parser = etree.HTMLParser(encoding="utf8", recover=False)
-    return compile_files(files, html_parser)
+    """
+    compiles files to python module containing WTForms.
+    :files: [filepath]
+    """
+    forms = parse_files(files)
+    return render_forms(forms)
+
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="This utility is part of the DOliberto project (see github.com/DOliberto/DOliberto.")
+    subparsers = parser.add_subparsers(title="subcommands", help="sub-command help")
+    
+    # test
+    description_help = "parses publication templates in the appropriate format and outputs their AST."
+    parser_tt = subparsers.add_parser("test-template", description=description_help, help=description_help, aliases=["tt"])
+    parser_tt.add_argument("filepaths", nargs="+", type=str,
+                           help="paths to template file.")
+    parser_tt.set_defaults(func=lambda x: print(parse_files(x.filepaths)))
+
+    # compile
+    description_help = "parses publication templates in the appropriate format and compiles them to WTForms."
+    parser_tt = subparsers.add_parser("compile-form", description=description_help, help=description_help, aliases=["cf"])
+    parser_tt.add_argument("filepaths", nargs="+", type=str,
+                           help="paths to template file.")
+    parser_tt.set_defaults(func=lambda x: print(compile_forms(x.filepaths)))
+
+    # parse args
+    args = parser.parse_args()
+    args.func(args)
