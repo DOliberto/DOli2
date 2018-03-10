@@ -1,5 +1,3 @@
-<div class="doli-publication" data-doli="decreto">
-
 # Presidência da República
 ## Casa Civil
 ### Subchefia para Assuntos Jurídicos
@@ -20,5 +18,3 @@ confere {{justificativa_legal}},
 **{{_nome_chefe_executivo}}**
 
 *{{_chefe_executivo}}*
-
-</div>

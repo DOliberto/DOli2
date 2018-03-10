@@ -88,8 +88,16 @@ def make_form(form_name, form_fields):
 
 
 def compile_form_in_file(fp, p):
-    """reads form markup in file using parser p to tuple."""
+    """
+    reads form markup in file using parser p to tuple. we might have
+    to manually feed the parser an enclosing `div` element, else it
+    won't consider the markdown file valid HTML.
+
+    """
+    #p.feed('<div class="doli-publication" id="doli-{}">\n\n'.format(basename(fp)))
     html = etree.parse(fp, parser=p)
+    #p.feed('\n</div>')
+    #p.close()
     elems = html.findall(DOLI_XPATH)
     return make_form(filenameWOext(fp), list(map(elem2field, elems)))
 
