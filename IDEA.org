@@ -1,0 +1,59 @@
+#+TITLE: um diário oficial para pessoas, escrito por máquinas
+
+toda publicação de um DO tem como contrapartida uma nova entrada em
+uma base de dados. a publicação é feita para leitura humana, ao passo
+que a base dados é desenhada para a análise automática feita por
+computadores. uma deve corresponder à outra, de modo que uma pessoa
+suficientemente treinada pode ler qualquer uma delas e produzir a
+outra.
+
+* o problema
+é um desperdício de recursos, portanto, produzir publicação e dado de
+maneira independente: bastaria produzir um deles, e o outro seria
+derivado automaticamente. 
+
+mas qual deles deve ser produzido?
+
+como foi mencionado antes, para pessoas não faz diferença qual forma é
+produzida primeiro. mas se quisermos derivar uma forma da outra
+/automaticamente/, estamos falando de computadores, e aqui há uma
+diferença entre =dado -> publicação= e =publicação -> dado=.
+
+os dois caminhos possíveis de derivação por máquina são instâncias de
+problemas conhecidos da área de processamento de linguagem natural
+(PLN). =dado -> publicação= é um problema de geração de linguagem
+natural (NLG, em inglês), ao passo que =publicação -> dado= é um
+problema de compreensão de linguagem natural (NLU, em inglês).
+
+de fato, o segundo caminho é aquele tentado por diversas iniciativas
+de "mineração" de diários oficiais, com resultados ruins -- a despeito
+da simplicidade relativa das publicações dos DOs em relação a outros
+tipos de publicação, como por exemplo tuítes. não é incompetência das
+pessoas que tentaram -- o problema de NLU é reconhecidamente mais
+difícil que o de NLG, como uma leitura rápida das páginas da Wikipedia
+permite concluir.
+
+não está se dizendo que o problema de NLG é fácil: gerar linguagem
+natural de maneira artificial não é nada simples. mas no caso das
+publicações em DOs (um domínio muito mais simples do que, por exemplo,
+artigos de opinião), pode-se obter resultados satisfatórios com
+relativa simplicidade, por meio de templates para cada tipo de
+publicação.
+
+* a solução
+um diário oficial ideal deve ser desenvolvido tendo as seguintes
+ideias em mente:
+- o diário oficial é uma interface para pessoas se informarem sobre os
+  eventos de uma entidade governamental, de maneira semelhante ao site
+  [[dados.gov.br]], que pode ser pensado como uma interface para um
+  computador se informar sobre os eventos do governo federal
+  brasileiro. assim, a leitura deve ser facilitada, e devem ser
+  oferecidas facilidades para o acompanhamento de processos, eventos,
+  e entidades específicas;
+- se toda publicação de um diário oficial tem sua contrapartida em
+  forma de dado, essa conexão deve ser explicitada por meio de links
+  estáveis de uma para outra (de preferência usando URNs, à la LeXML
+  Brasil);
+- uma vez que as publicações podem ser derivadas dos dados
+  automaticamente, o DO deve ser escrito por máquinas, e os dados
+  devem ser disponibilizados livremente.
