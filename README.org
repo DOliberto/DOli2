@@ -7,7 +7,7 @@ architecture is heavily inspired by that of [[https://blog.miguelgrinberg.com/po
   you need python >3.5 and =virtualenv= installed.
   : $ virtualenv venv
   will create a virtual environment at the current directory.
-  
+
   if you haven't done it yet, install the project's dependencies:
   : $ pip install -r requirements.txt
 
@@ -27,5 +27,10 @@ architecture is heavily inspired by that of [[https://blog.miguelgrinberg.com/po
   will run the flask app on localhost. this requires setting the
   =FLASK_APP= variable with
   : $ export FLASK_APP=doli.py
+  and (if you haven't done it before on your computer) starting the
+  app's database with
+  : flask db init
+  if your database shema is out-of-date, run:
+  : flask db upgrade
   setting flask on debug mode is also useful:
   : $ export FLASK_DEBUG=1
